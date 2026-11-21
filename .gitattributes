@@ -1,3 +1,10 @@
 # Store every file byte-for-byte: manifest.json pins SHA-256 checksums,
 # so line-ending normalisation would break deploy verification.
 * -text
+
+# GitHub language stats (Linguist): dist/ is hand-written source served as-is,
+# not build output; bundled third-party libraries stay excluded.
+dist/** linguist-vendored=false linguist-generated=false
+dist/vendor/** linguist-vendored
+*.glsl linguist-language=GLSL linguist-detectable
+docs/** linguist-documentation

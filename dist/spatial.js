@@ -88,6 +88,8 @@ function makeBlade() {
    lobe, and a graph. Morphing runs in the vertex shader; JS only moves
    a few uniforms per frame. Illustrative geometry, not research data.
 ------------------------------------------------------------------- */
+const shaderFiles = Promise.all(['particles.vert.glsl', 'particles.frag.glsl'].map(name =>
+  fetch(new URL(`./shaders/${name}`, import.meta.url)).then(r => { if (!r.ok) throw new Error(`Shader ${name}: ${r.status}`); return r.text(); })));
 function seeded(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 function morphTargets(count) {
   const rand = seeded(7), R = () => rand() * 2 - 1;
@@ -127,7 +129,7 @@ function morphTargets(count) {
   }
   return { net, blade, ant, graph, seed };
 }
-function makeMorphField(count) {
+function makeMorphField(count, [vertexShader, fragmentShader]) {
   const t = morphTargets(count), geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(t.net, 3));
   geometry.setAttribute('aBlade', new THREE.BufferAttribute(t.blade, 3));
@@ -136,37 +138,8 @@ function makeMorphField(count) {
   geometry.setAttribute('aRand', new THREE.BufferAttribute(t.seed, 1));
   geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 12);
   const uniforms = { uTime: { value: 0 }, uMorph: { value: 0 }, uPixel: { value: 1 }, uSize: { value: 58 }, uScatter: { value: 0 }, uMouse: { value: new THREE.Vector3(99, 99, 99) }, uColorA: { value: new THREE.Color(0xdcf99b) }, uColorB: { value: new THREE.Color(0x6fb6a2) } };
-  const material = new THREE.ShaderMaterial({ uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    vertexShader: `
-      attribute vec3 aBlade; attribute vec3 aAnt; attribute vec3 aGraph; attribute float aRand;
-      uniform float uTime, uMorph, uPixel, uSize, uScatter; uniform vec3 uMouse;
-      varying float vAlpha; varying float vTone;
-      vec3 shape(float i){ i = mod(i, 4.0); if(i < .5) return position; if(i < 1.5) return aBlade; if(i < 2.5) return aAnt; return aGraph; }
-      void main(){
-        float stage = floor(uMorph), f = fract(uMorph);
-        float t = clamp((f - aRand * .35) / .65, 0., 1.); t = t * t * (3. - 2. * t);
-        vec3 p = mix(shape(stage), shape(stage + 1.), t);
-        float arc = sin(t * 3.14159);
-        p += arc * vec3(sin(aRand * 41. + uTime * .7), cos(aRand * 23. + uTime * .6), sin(aRand * 17. + uTime * .5)) * .85;
-        p += .035 * vec3(sin(uTime * 1.3 + aRand * 30.), cos(uTime * 1.1 + aRand * 20.), sin(uTime * .9 + aRand * 10.));
-        vec3 d = p - uMouse; float dist = length(d);
-        p += (d / max(dist, .001)) * smoothstep(1.7, 0., dist) * .6;
-        p += normalize(p + vec3(aRand - .5, .3, aRand)) * uScatter * (2. + aRand * 5.);
-        vec4 mv = modelViewMatrix * vec4(p, 1.);
-        gl_Position = projectionMatrix * mv;
-        gl_PointSize = uSize * uPixel * (.45 + aRand * aRand * 1.3) * (1. + arc * .5) / -mv.z;
-        vAlpha = (.5 + .5 * aRand) * (1. - uScatter * .9);
-        vTone = clamp((p.y + 3.6) / 7.2 + (aRand - .5) * .3, 0., 1.);
-      }`,
-    fragmentShader: `
-      uniform vec3 uColorA, uColorB; varying float vAlpha; varying float vTone;
-      void main(){
-        float d = length(gl_PointCoord - .5); if (d > .5) discard;
-        float glow = pow(smoothstep(.5, 0., d), 2.);
-        gl_FragColor = vec4(mix(uColorB, uColorA, vTone) * glow, glow * vAlpha);
-        #include <colorspace_fragment>
-      }`
-  });
+  // GLSL lives in dist/shaders/*.glsl.
+  const material = new THREE.ShaderMaterial({ uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexShader, fragmentShader });
   const points = new THREE.Points(geometry, material);
   // Faint depth dust behind the morph.
   const dustRand = seeded(11), dust = new Float32Array(900 * 3);
@@ -177,8 +150,8 @@ function makeMorphField(count) {
 }
 
 const heroView = createView(document.querySelector('.field'));
-if (heroView) {
-  const field = makeMorphField(compact.matches ? 7000 : 14000), group = new THREE.Group();
+if (heroView) shaderFiles.then(shaders => {
+  const field = makeMorphField(compact.matches ? 7000 : 14000, shaders), group = new THREE.Group();
   group.add(field.points); heroView.scene.add(group, field.dustPoints);
   const legend = [...document.querySelectorAll('.morph-legend li')];
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), mouseTarget = new THREE.Vector3(99, 99, 99), ndc = new THREE.Vector2();
@@ -210,7 +183,13 @@ if (heroView) {
     field.uniforms.uPixel.value = heroView.renderer.getPixelRatio();
   };
   document.dispatchEvent(new Event('portfolio:3d-ready'));
-}
+  renderOnce(); schedule();
+}).catch(error => {
+  // Shaders unavailable: hand the hero back to the 2D canvas field.
+  console.warn('[spatial] hero shaders failed, using 2D fallback', error);
+  heroView.lost = true; heroView.canvas.remove(); heroView.host.classList.remove('has-3d');
+  document.dispatchEvent(new Event('portfolio:3d-unavailable'));
+});
 
 const studyView = createView(document.querySelector('#blade-study'));
 if (studyView) {

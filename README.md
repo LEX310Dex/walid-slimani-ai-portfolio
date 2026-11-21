@@ -64,7 +64,7 @@ This repository is the source of my portfolio site. The site makes one point: **
 3. an inset-fed patch antenna with a radiation lobe
 4. a k-nearest-neighbour graph
 
-All interpolation, staggered timing, the arc trajectories between shapes, cursor repulsion and the scroll-driven scatter run in the vertex shader. JavaScript updates only a handful of uniforms per frame.
+All interpolation, staggered timing, the arc trajectories between shapes, cursor repulsion and the scroll-driven scatter run in the vertex shader ([`dist/shaders/`](dist/shaders)). JavaScript updates only a handful of uniforms per frame.
 
 **Scroll choreography.** GSAP ScrollTrigger drives:
 - a sticky three-stage case study
@@ -92,6 +92,8 @@ A scroll marquee also reacts to scroll velocity and direction.
 - Canvas and SVG fallbacks render when WebGL is unavailable.
 - Project dialogs trap focus and return it to the control that opened them.
 
+**Reproducible assets.** The interface sounds are built from two CC0 recordings by [`tools/prepare_audio.py`](tools/prepare_audio.py), which uses ffmpeg filtering plus NumPy trimming, normalisation and eased fades. Re-running it reproduces the shipped `.wav` files byte for byte.
+
 **Supply-chain integrity.** Every deployed file is pinned by SHA-256 in [`manifest.json`](manifest.json). The build step ([`prepare.mjs`](prepare.mjs)) refuses to deploy if any file doesn't match, and [CI](.github/workflows/verify.yml) re-checks integrity, JavaScript syntax and asset references on every push.
 
 ## Tech stack
@@ -99,9 +101,9 @@ A scroll marquee also reacts to scroll velocity and direction.
 | Layer | Choice |
 |---|---|
 | Markup & styling | Semantic HTML5, modern CSS (`:has()`, `clip-path`, individual transform properties, container-safe layouts) |
-| 3D | Three.js r180 with custom `ShaderMaterial` (GLSL) |
+| 3D | Three.js r180 with custom `ShaderMaterial`; GLSL vertex and fragment shaders |
 | Motion | GSAP 3.13 + ScrollTrigger, Web Animations API, IntersectionObserver |
-| Audio | Web Audio API, opt-in CC0 interface sounds |
+| Audio | Web Audio API at runtime; Python (NumPy) + ffmpeg asset pipeline |
 | Hosting | Vercel static output with a checksum-verified build |
 | CI | GitHub Actions |
 
@@ -117,7 +119,8 @@ No framework and no bundler: the browser runs the code as written.
 │   ├── app.js               # Project cards, dialogs, galleries, 2D fallback field
 │   ├── projects.js          # Project data: copy, metrics, case-study details
 │   ├── galleries.js         # Evidence images and captions per project
-│   ├── spatial.js           # Three.js scenes + GLSL particle morph (ES module)
+│   ├── spatial.js           # Three.js scenes + particle morph (ES module)
+│   ├── shaders/             # GLSL vertex + fragment shaders for the morph
 │   ├── motion-pro.js/.css   # Scroll choreography, reveals, cursor, marquee
 │   ├── details-motion.*     # Artwork depth, line traces, orbit motion
 │   ├── sound.*              # Opt-in Web Audio interface sounds
@@ -126,6 +129,7 @@ No framework and no bundler: the browser runs the code as written.
 ├── manifest.json            # SHA-256 pin for every file in dist/
 ├── prepare.mjs              # Build step: integrity verification
 ├── vercel.json              # Static hosting configuration
+├── tools/                   # Python asset pipeline (interface sounds) + CC0 sources
 ├── docs/screenshots/        # README imagery
 └── .github/workflows/       # CI: syntax, integrity, asset-reference checks
 ```
@@ -145,7 +149,7 @@ Then open <http://localhost:4173>.
 To verify integrity the same way CI does:
 
 ```bash
-node prepare.mjs   # → "Ready: 64 verified static files."
+node prepare.mjs   # → "Ready: 66 verified static files."
 ```
 
 After editing anything in `dist/`, regenerate the matching `sha256` entries in `manifest.json`, or the build will reject the change.
