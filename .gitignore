@@ -11,3 +11,7 @@ desktop.ini
 
 # Dependencies (none required, kept for safety)
 node_modules/
+
+# Python bytecode
+__pycache__/
+*.pyc
