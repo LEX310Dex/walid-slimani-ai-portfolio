@@ -1,0 +1,20 @@
+/* Project evidence galleries; the original portfolio layout is unchanged. */
+.project-gallery{margin:30px 0 36px;min-width:0}
+.gallery-heading{display:flex;justify-content:space-between;gap:16px;font-size:9px;letter-spacing:.12em;color:#607158;margin-bottom:12px}
+.gallery-figure{margin:0}
+.gallery-original{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d4d9cb;min-height:280px;height:440px;cursor:zoom-in}
+.gallery-image{display:block;width:100%;height:100%;object-fit:contain}
+.gallery-caption{font-size:12px;line-height:1.6;color:#526348;min-height:39px;padding-top:12px}
+.gallery-toolbar{display:flex;align-items:center;gap:15px;margin:10px 0 20px}
+.gallery-toolbar button{border:1px solid #a9b49d;width:42px;height:42px;font-size:20px;background:transparent;color:#25321e;transition:background .2s}
+.gallery-toolbar button:hover{background:#dce4cf}
+.gallery-count{font-size:11px;font-variant-numeric:tabular-nums;min-width:43px;text-align:center;color:#526348}
+.gallery-full{margin-left:auto;font-size:12px;text-decoration:underline;text-underline-offset:4px}
+.gallery-thumbnails{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.gallery-thumbnails button{position:relative;min-width:0;height:68px;padding:3px;border:1px solid #c5cdbb;background:#fff;transition:border-color .2s}
+.gallery-thumbnails img{display:block;width:100%;height:100%;object-fit:contain}
+.gallery-thumbnails button[aria-current="true"]{border:2px solid #344b27;box-shadow:0 0 0 2px #d4debf}
+.gallery-thumbnails button:hover{border-color:#344b27}
+.gallery-thumbnails span{position:absolute;bottom:2px;left:2px;padding:2px 4px;background:#20311be8;color:#f1f4e9;font-size:8px;font-variant-numeric:tabular-nums}
+.project-gallery a:focus-visible,.project-gallery button:focus-visible{outline:3px solid #537232;outline-offset:3px}
+@media(max-width:700px){.gallery-original{height:280px;min-height:0}.gallery-thumbnails{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.gallery-thumbnails button{height:54px}.gallery-toolbar{gap:9px}.gallery-full{font-size:10px}.gallery-toolbar button{width:38px;height:40px}.gallery-caption{font-size:11px}}

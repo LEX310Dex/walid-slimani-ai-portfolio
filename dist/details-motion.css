@@ -1,0 +1,13 @@
+/* Motion stays inside existing artwork: no layout or section changes. */
+.art-depth{width:100%;height:100%;transition:transform 650ms cubic-bezier(.2,.75,.2,1);transform-origin:50% 50%}
+.project-visual .art-depth>svg,.project-visual .art-depth>img{display:block;width:100%;height:100%}
+.project-read,.text-link,.contact-cta{position:relative}
+.project-read::after,.text-link::after,.contact-cta::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:100% 50%;transition:transform 500ms cubic-bezier(.22,.61,.36,1);pointer-events:none}
+.project-read:is(:hover,:focus-visible)::after,.text-link:is(:hover,:focus-visible)::after,.contact-cta:is(:hover,:focus-visible)::after{transform:scaleX(1);transform-origin:0 50%}
+.project-visual .visual-open{transition:transform 500ms cubic-bezier(.2,.75,.2,1),background 350ms}
+.project-visual:is(:hover,:focus-visible) .visual-open{transform:translate(2px,-2px);background:#dcf99b}
+.project-row .row-arrow{transition:transform 450ms cubic-bezier(.2,.75,.2,1)}
+.project-row:is(:hover,:focus-visible) .row-arrow{transform:translate(3px,-3px)}
+.paused .art-depth{transform:none!important;transition:none}
+.paused .art-trace{display:none}
+@media(prefers-reduced-motion:reduce){.art-depth{transform:none!important}.art-trace{display:none}}

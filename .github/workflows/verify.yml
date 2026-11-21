@@ -1,0 +1,43 @@
+name: Verify site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Syntax + integrity checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax-check JavaScript
+        run: |
+          for f in dist/*.js; do
+            if grep -q "^import " "$f"; then
+              node --input-type=module --check < "$f"
+            else
+              node --check "$f"
+            fi
+            echo "ok  $f"
+          done
+
+      - name: Verify every static file against manifest.json (SHA-256)
+        run: node prepare.mjs
+
+      - name: Check internal asset references resolve
+        run: |
+          missing=0
+          for ref in $(grep -oE '(src|href)="[^"]+"' dist/index.html | sed -E 's/^(src|href)="//; s/"$//' | grep -vE '^(#|[a-z]+:)' | sed -E 's/\?.*$//' | sort -u); do
+            if [ ! -f "dist/$ref" ]; then echo "missing: $ref"; missing=1; fi
+          done
+          exit $missing
