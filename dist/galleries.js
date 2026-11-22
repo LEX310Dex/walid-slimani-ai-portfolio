@@ -149,7 +149,7 @@ window.PORTFOLIO_GALLERIES = {
     },
     {
       "src": "assets/projects/routing/routing-02.png",
-      "caption": "Default and enhanced AODV: 30 minutes, 500 nodes"
+      "caption": "Default and enhanced AODV: 30 minutes, 500 nodes (throughput labels omit awk's exponent: true values 10.09M vs 9.87M kbit)"
     }
   ]
 };
