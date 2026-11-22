@@ -149,7 +149,7 @@ Then open <http://localhost:4173>.
 To verify integrity the same way CI does:
 
 ```bash
-node prepare.mjs   # → "Ready: 66 verified static files."
+node prepare.mjs   # → "Ready: 68 verified static files."
 ```
 
 After editing anything in `dist/`, regenerate the matching `sha256` entries in `manifest.json`, or the build will reject the change.
@@ -164,7 +164,7 @@ The site deploys to **Vercel** as static output. Settings are in [`vercel.json`]
 - **Personal content** (résumé, research figures, project screenshots, biography): © Walid Slimani, all rights reserved.
 - **Three.js:** MIT. **GSAP / ScrollTrigger:** [GSAP Standard License](https://gsap.com/standard-license/).
 - **Interface sounds:** CC0 derivatives, see [`dist/assets/audio/CREDITS.md`](dist/assets/audio/CREDITS.md).
-- Microsoft and Cisco logos identify certification issuers and remain their owners' trademarks.
+- Microsoft and Cisco logos identify certification issuers, and the ELTE and ENPO-MA logos identify academic institutions; all remain their owners' trademarks.
 
 ---
 
