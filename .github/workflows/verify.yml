@@ -37,7 +37,7 @@ jobs:
       - name: Check internal asset references resolve
         run: |
           missing=0
-          for ref in $(grep -oE '(src|href)="[^"]+"' dist/index.html | sed -E 's/^(src|href)="//; s/"$//' | grep -vE '^(#|[a-z]+:)' | sed -E 's/\?.*$//' | sort -u); do
+          for ref in $(grep -oE '(src|href)="[^"]+"' dist/index.html | sed -E 's/^(src|href)="//; s/"$//' | grep -vE '^(#|[a-z]+:|/_vercel/)' | sed -E 's/\?.*$//' | sort -u); do
             if [ ! -f "dist/$ref" ]; then echo "missing: $ref"; missing=1; fi
           done
           exit $missing
