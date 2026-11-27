@@ -35,7 +35,7 @@ This repository is the source of my portfolio site. The site makes one point: **
 | **Cascade ML inverse design** for patch antennas | 4-stage cascade of voting ensembles (GB + RF + ET), automated CST data pipeline of 6,450 samples, full-stack web platform | **R² > 0.99** geometry · R² ≈ 0.96 resonant frequency |
 | **TD3-MoE**: deep RL expert routing for MU-MIMO | TD3 actor-critic as an attention-supervised mixture-of-experts router, curriculum learning | **33.434 bits/s/Hz** mean sum rate (aggregate benchmark) · CV: 34.01 bits/s/Hz, 99.76 % of optimal |
 | **GNN + TabTransformer** 5G signal prediction | Hybrid GCN + TabTransformer on 38,610 real-world measurements (386,100 KNN edges), leakage-audited | **R² = 0.906** · MAE 2.49 dB · 81.1 % quality accuracy on held-out data, beating spatial interpolation |
-| **RL-enhanced AODV** | Q-learning agent embedded in a live protocol (C/C++, Linux) | Evaluated in 500-node, 15- and 30-minute scenarios |
+| **RL-enhanced AODV** | Q-learning agent embedded in AODV route-request handling (ns-2, C++) | **−50 % delay** · −15 % routing overhead · −8 % route errors vs AODV in a 500-node network |
 | **LLM assistant for Odoo ERP** | LLM chatbot integration, intent handling | Installed module with chat sessions, logs and intents |
 
 > Results are as reported in my CV and project evaluations. Each project page on the site explains which evaluation every number comes from.
@@ -149,7 +149,7 @@ Then open <http://localhost:4173>.
 To verify integrity the same way CI does:
 
 ```bash
-node prepare.mjs   # → "Ready: 66 verified static files."
+node prepare.mjs   # → "Ready: 68 verified static files."
 ```
 
 After editing anything in `dist/`, regenerate the matching `sha256` entries in `manifest.json`, or the build will reject the change.
@@ -164,7 +164,7 @@ The site deploys to **Vercel** as static output. Settings are in [`vercel.json`]
 - **Personal content** (résumé, research figures, project screenshots, biography): © Walid Slimani, all rights reserved.
 - **Three.js:** MIT. **GSAP / ScrollTrigger:** [GSAP Standard License](https://gsap.com/standard-license/).
 - **Interface sounds:** CC0 derivatives, see [`dist/assets/audio/CREDITS.md`](dist/assets/audio/CREDITS.md).
-- Microsoft and Cisco logos identify certification issuers and remain their owners' trademarks.
+- Microsoft and Cisco logos identify certification issuers, and the ELTE and ENPO-MA logos identify academic institutions; all remain their owners' trademarks.
 
 ---
 
